@@ -28,3 +28,5 @@ block_interval: 3
  convert: 50 (12847.0 SBD) @ 9.3 $pm 
  feed base: 256 (0.440 SBD), each 0:05:23.824219
 ```
+
+![steem_flow](steem_flow.svg.png "STEEM flow diagram")
