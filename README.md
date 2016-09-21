@@ -1,7 +1,9 @@
 # steem-flow.py
 
 Count transaction in STEEM blockchain from last block and calculate average currency flow intensity and ratio
+
 spm - STEEM per minute
+
 $pm - SBD per minute
 
 ```
