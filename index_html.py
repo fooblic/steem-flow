@@ -32,7 +32,7 @@ transfers: %s
 <br>
 to_exchange: %s (%s STEEM @ %s spm, %s SBD @ %s $pm) 
 <br>
-from_exchange: %s (%s STEEM @ %s spm, %s SBD @ %s $spm) 
+from_exchange: %s (%s STEEM @ %s spm, %s SBD @ %s $pm) 
 <br>
 to/from exchange ratio: %s:1 STEEM, %s:1 SBD
 <br>

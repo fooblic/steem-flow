@@ -41,7 +41,8 @@ oper_list = ('vote',
             'account_update',
             'account_witness_vote')
 
-exchanges = ('bittrex', 'poloniex', 'blocktrades', 'openledger')
+exchanges = ('bittrex', 'poloniex', 'blocktrades', 'openledger',
+                 'hitbtc-exchange', 'hitbtc-payout', 'changelly')
 
 br = block_number
 
@@ -54,7 +55,7 @@ while True:
     dys = rpc.get_block(br)
     time_dys = dateutil.parser.parse(dys['timestamp'])
     time_diff = time_dys - time_last_block
-    dmin = time_diff.seconds/60
+    dmin = time_diff.days*24*60 + time_diff.seconds/60
     txs = dys['transactions']
     
     for tx in txs:
