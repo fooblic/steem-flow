@@ -33,4 +33,7 @@ block_interval: 3
 ```
 
 Graphical representation of STEEM blockchain flows:
+
 ![steem_flow](steem_flow.svg.png "STEEM flow diagram")
+
+![steem_flow2](steem_flow2.svg.png "STEEM flow diagram")
