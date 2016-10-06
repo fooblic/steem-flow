@@ -36,4 +36,28 @@ Graphical representation of STEEM blockchain flows:
 
 ![steem_flow](steem_flow.svg.png "STEEM flow diagram")
 
+
+```
+block_interval: 3 
+ from_last_block: 5300787 timestamp: 2016-09-26T07:39:24 
+
+ current_block: 5597757 (#296970) time_stamp: 2016-10-06T15:19:33 (10 days, 7:40:09, 14860.1 minutes passed) 
+
+ pow2_count: 14347 (avg: 20.7 blocks), each 0:01:02.146024 
+
+ transfers: 11436 
+ to_exchange: 2195 (950443.0 STEEM @ 64.0 spm, 205044.0 SBD @ 13.8 $pm) 
+ from_exchange: 681 (501884.6 STEEM @ 33.8 spm, 279145.7 SBD @ 18.8 $pm) 
+ to/from exchange ratio: 1.89:1 STEEM, 0.73:1 SBD 
+ between_users: 6979 
+ between_exchanges: 486 
+ to_null: 1095 (3269.9 SBD) @ 0.2 $pm 
+
+ vesting: 3214 (526521.3 STEEM) @ 35.4 spm 
+ new withdraw: 613 (11369.6 MV) @   VESTS per min
+
+ convert: 475 (147044.6 SBD) @ 9.9 $pm 
+ feed base: 3174 (0.364 SBD), each 0:04:40.874291
+```
+
 ![steem_flow2](steem_flow2.svg.png "STEEM flow diagram")
