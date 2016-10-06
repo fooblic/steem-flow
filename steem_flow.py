@@ -164,7 +164,7 @@ while True:
                     trans_u, trans_ex,
                     trans_null, round(to_null_sbd,1), round(to_null_sbd/dmin,1),
                     trans_vest, round(vesting,1), round(vesting/dmin,1),
-                    trans_withd, round(withdraw/1000/1000,1), round(withdraw/104/7/24/60,1),
+                    trans_withd, round(withdraw/1000/1000,1), round(withdraw/dmin,1),
                     convert, round(convert_sbd,1), round(convert_sbd/dmin,1),
                     feed_count, feed_base, feed_time
                 )

@@ -45,7 +45,7 @@ to_null: %s (%s SBD) @ %s $pm
 
 vesting: %s (%s STEEM) @ %s spm
 <br>
-new withdraw: %s (%s mVESTS) @ %s VESTS per min
+new withdraw: %s (%s MV) @ %s VESTS per min
 <br><br>
 convert: %s (%s SBD) @ %s $pm
 <br>

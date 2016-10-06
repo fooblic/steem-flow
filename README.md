@@ -1,11 +1,14 @@
 # steem-flow.py
 
-Count transaction in STEEM blockchain from last block and calculate average currency flow intensity and ratio
+* https://steemit.com/@fooblic
+
+Online transaction monitoring starting from last block in STEEM blockchain and calculate average STEEM & SBD flows intensity and ratio.
 
 spm - STEEM per minute
 
 $pm - SBD per minute
 
+Output example:
 ```
 block_interval: 3 
  from_last_block: 5116714 timestamp: 2016-09-19T21:34:48 
@@ -29,4 +32,5 @@ block_interval: 3
  feed base: 256 (0.440 SBD), each 0:05:23.824219
 ```
 
+Graphical representation of STEEM blockchain flows:
 ![steem_flow](steem_flow.svg.png "STEEM flow diagram")
