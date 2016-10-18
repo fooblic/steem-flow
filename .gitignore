@@ -1,0 +1,6 @@
+*~
+*.sh
+*.html
+*.ansible
+*.yml
+*.csv
