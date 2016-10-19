@@ -6,13 +6,15 @@ Online transaction monitoring starting from last block in STEEM blockchain and c
 
 ## steem_flow2
 
-Collect average STEEM flow intensity data to Redis DB. The number of last days statistics setting by cli: 
-`> ./steem_flow2.py 10 &`
+Collect average STEEM flow intensity data to Redis DB for certain days. The number of last days statistics setting by command:
+```
+$ ./steem_flow2.py 10 &
+```
 
 Simple web-server to display flow data from Redis DB:
 ```
-> ./steem_web.py &
-http://localhost:8787/mkf7j65khws96gkl/`
+$ ./steem_web.py &
+http://localhost:8787/mkf7j65khws96gkl/
 ```
 
 Output:
