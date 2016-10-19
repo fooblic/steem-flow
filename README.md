@@ -1,12 +1,52 @@
-# steem-flow.py
-
-* https://steemit.com/@fooblic
+# STEEM flow
 
 Online transaction monitoring starting from last block in STEEM blockchain and calculate average STEEM & SBD flows intensity and ratio.
+
+* http://steemit.com/@fooblic
+
+## steem_flow2
+
+Collect average STEEM flow intensity data to Redis DB. The number of last days statistics setting by cli: 
+`> ./steem_flow2.py 10 &`
+
+Simple web-server to display flow data from Redis DB:
+```
+> ./steem_web.py &
+http://localhost:8787/mkf7j65khws96gkl/`
+```
+
+Output:
+```
+block_interval: 3 
+ from_last_block: 5662618 timestamp: 2016-10-08T21:23:33 
+
+ parsed_block: 5896622 (#234004) time_stamp: 2016-10-17T00:29:18 (8 days, 3:05:45, 11705.8 minutes passed) 
+
+ pow2_count: 11149 (avg: 21.0 blocks), each 0:01:02.996233 
+
+ total transfers: 9443 including: 
+ to_exchange: 1872 (989533.0 STEEM @ 84.5 spm, 131602.2 SBD @ 11.2 $pm) 
+ from_exchange: 740 (526254.3 STEEM @ 45.0 spm, 142357.1 SBD @ 12.2 $pm) 
+ to/from exchange ratio: 1.88:1 STEEM, 0.92:1 SBD 
+ between_users: 5685 
+ between_exchanges: 403 
+ to_null: 743 (1651.0 SBD) @ 0.1 $pm 
+
+ vesting: 4436 (516711.3 STEEM) @ 44.1 spm 
+ new withdraw: 270 (7492.2 MV) @  MV per min 
+
+ convert: 270 (149806.0 SBD) @ 12.8 $pm 
+ feed base: 3977 (0.264 SBD), each 0:02:56.502892
+```
 
 spm - STEEM per minute
 
 $pm - SBD per minute
+
+
+## steem_flow.py
+
+Update collected data to index.html file for each interval.
 
 Output example:
 ```
