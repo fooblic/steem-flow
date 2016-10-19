@@ -7,12 +7,22 @@ import yaml
 import redis
 import json
 
+# Python Library for Steem:
+# https://github.com/xeroc/python-steemlib
 from steemapi.steemnoderpc import SteemNodeRPC
+
+'''
+Retrive and parse blocks from STEEM blockchain
+Collect average STEEM flows intensity to Redis DB
+
+Author: https://steemit.com/@fooblic
+'''
 
 # My vars
 from index_html2 import *
 from flow_vars2 import *
 
+# get parameter from cli
 pdays = float(sys.argv[1]) # how many days to get stats
 
 # My config
@@ -49,7 +59,8 @@ oper_list = ('vote',
             'account_witness_vote')
 
 exchanges = ('bittrex', 'poloniex', 'blocktrades', 'openledger',
-                 'hitbtc-exchange', 'hitbtc-payout', 'changelly')
+                 'hitbtc-exchange', 'hitbtc-payout', 'changelly',
+                 'shapeshiftio')
 
 rdb = redis.Redis(host="localhost", port=6379)
 
@@ -58,10 +69,6 @@ block_head = {"block_interval": block_interval,
               "last_block_time": last_block_time}
 
 rdb.set("block_head", json.dumps(block_head))
-read_head = json.loads( rdb.get("block_head").decode() )
-
-with open('index.html', 'w') as fl:
-      fl.write(html_1 % read_head )
 
 print('Start from %s block till %s ...' % (start_block, block_number) )
 
@@ -109,7 +116,7 @@ for br in range(start_block, block_number + 1):
                         elif amount[1] == 'STEEM':
                             to_ex_steem += float(amount[0])
                         else:
-                            print('\n!!! Unknown currency !!!\n')
+                            print('\n!!! Unknown currency\n')
 
                     elif operation[1]["from"] in exchanges \
                         and operation[1]["to"] not in exchanges:
@@ -120,7 +127,7 @@ for br in range(start_block, block_number + 1):
                         elif amount[1] == 'STEEM':
                             from_ex_steem += float(amount[0])
                         else:
-                            print('\n!!! Unknown currency !!!\n')
+                            print('\n!!! Unknown currency\n')
 
                     elif operation[1]["from"] not in exchanges \
                         and operation[1]["to"] not in exchanges:
@@ -131,7 +138,7 @@ for br in range(start_block, block_number + 1):
                         trans_ex += 1
 
                     else:
-                        print('\n!!!!!!!!! Unknown transfer !!!!!!!!!!\n')
+                        print('\n!!! Unknown transfer\n')
 
                 if operation[0] == 'transfer_to_vesting':
                     trans_vest += 1
@@ -154,7 +161,7 @@ for br in range(start_block, block_number + 1):
                     if amount[1] == 'SBD':
                         convert_sbd += float(amount[0])
                     else:
-                        print('\n!!! Unknown currency !!!\n')
+                        print('\n!!! Unknown currency\n')
 
                 if from_ex_steem > 0:
                     steem_ex_flow = to_ex_steem / from_ex_steem
@@ -208,7 +215,7 @@ for br in range(start_block, block_number + 1):
 
                     "trans_withd": trans_withd,
                     "withdraw": withdraw/1000/1000,
-                    "withdraw_dmin": withdraw/1000/1000,
+                    "withdraw_dmin": withdraw/1000/1000/dmin,
 
                     "convert": convert,
                     "convert_sbd": convert_sbd,
@@ -220,13 +227,8 @@ for br in range(start_block, block_number + 1):
                 }
 
                 rdb.set("block_stats", json.dumps(block_stats))
-                read_stats = json.loads( rdb.get("block_stats").decode() )
-                #out = html_all % block_stats
                 
     block_count += 1
     time.sleep(pause)
-
-with open(index_file, 'w') as fl:
-    fl.write(html_all % block_stats)
 
 print('Parsed %s blocks for %s' % (block_count, str(time_diff)) )

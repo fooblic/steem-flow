@@ -4,3 +4,4 @@
 *.ansible
 *.yml
 *.csv
+*.pyc
