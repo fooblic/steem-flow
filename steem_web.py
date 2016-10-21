@@ -24,11 +24,14 @@ print "http://%s:%s/%s/" % (host, port, key)
 rdb = redis.Redis(host="localhost", port=6379)
 #pp = pprint.PrettyPrinter(indent=4)
 
+block_head = json.loads( rdb.get("block_head").decode() )
+redis_key = "steem:%s:%s" % (block_head["start_block"], block_head["end_block"])
+
 class Data(Resource):
     isLeaf = True
     
     def render_GET(self, request):
-        read_stats = json.loads( rdb.get("block_stats").decode() )
+        read_stats = json.loads( rdb.get(redis_key).decode() )
         #pp.pprint(read_stats)
         out = str(html_all % read_stats)
         return out
