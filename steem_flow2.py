@@ -7,8 +7,8 @@ import yaml
 import redis
 import json
 
-# Python Library for Steem:
-# https://github.com/xeroc/python-steemlib
+'''Python Library for Steem:
+https://github.com/xeroc/python-steemlib'''
 from steemapi.steemnoderpc import SteemNodeRPC
 
 '''
@@ -22,14 +22,33 @@ Author: https://steemit.com/@fooblic
 from index_html2 import *
 from flow_vars2 import *
 
-# get parameter from cli
-pdays = float(sys.argv[1]) # how many days to get stats
+# get parameters from cli
+usage = '''Error arg keys.
+Usage:
+    ./steem_flow2.py --days <num>
+or
+    ./steem_flow2.py --blocks <start> <end>'''
+try:
+    arg_key = sys.argv[1]
+except:
+    print(usage)
+    sys.exit(0)
+    
+if arg_key == "--days":
+    days = True
+    pdays = float(sys.argv[2]) # how many days to get stats
+elif arg_key == "--blocks":
+    days = False
+    start_block = int(sys.argv[2])
+    end_block   = int(sys.argv[3])
+else:
+    print(usage)
+    sys.exit(0)
 
 # My config
 my_config = yaml.load(open("steemapi.yml"))
 log = my_config['log']
-index_file = my_config['index_file']
-pause = 0.33 # seconds
+pause = my_config['pause'] # seconds
 
 rpc = SteemNodeRPC('ws://node.steem.ws')
 config = rpc.get_config()
@@ -41,7 +60,9 @@ pp.pprint(config)
 
 props = rpc.get_dynamic_global_properties()
 block_number = props['last_irreversible_block_num']
-start_block = block_number - int(pdays * bpd)
+if days:
+    start_block = block_number - int(pdays * bpd)
+    end_block   = block_number
 pp.pprint(props)
 
 last_block_time = rpc.get_block(start_block)['timestamp']
@@ -65,14 +86,15 @@ exchanges = ('bittrex', 'poloniex', 'blocktrades', 'openledger',
 rdb = redis.Redis(host="localhost", port=6379)
 
 block_head = {"block_interval": block_interval,
-              "block_number": block_number,
-              "last_block_time": last_block_time}
+              "start_block": start_block,
+              "last_block_time": last_block_time,
+              "end_block": end_block}
 
 rdb.set("block_head", json.dumps(block_head))
 
-print('Start from %s block till %s ...' % (start_block, block_number) )
+print('Start from #%s block at %s till block #%s ...' % (start_block, last_block_time, end_block) )
 
-for br in range(start_block, block_number + 1):
+for br in range(start_block, end_block + 1):
     dys = rpc.get_block(br)
     dys_ts = dys['timestamp']
     time_dys = dateutil.parser.parse(dys_ts)
@@ -226,7 +248,8 @@ for br in range(start_block, block_number + 1):
                     "feed_time": str(feed_time)
                 }
 
-                rdb.set("block_stats", json.dumps(block_stats))
+                redis_key = "steem:%s:%s" % (start_block, end_block)
+                rdb.set(redis_key , json.dumps(block_stats))
                 
     block_count += 1
     time.sleep(pause)
