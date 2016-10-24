@@ -21,26 +21,35 @@ Author: https://steemit.com/@fooblic
 # My vars
 from index_html2 import *
 from flow_vars2 import *
+from get_redis import *
 
 # get parameters from cli
 usage = '''Error arg keys.
-Usage:
-    ./steem_flow2.py --days <num>
-or
-    ./steem_flow2.py --blocks <start> <end>'''
+Usage: ./steem_flow2.py [options]
+  options:
+    --days <n>               parse blocks for <n> last days 
+    --blocks <start> <end>   parse blocks numbers from <start> to <end>
+    --redis                  parse block from last in Redis DB 
+'''
 try:
     arg_key = sys.argv[1]
 except:
     print(usage)
     sys.exit(0)
-    
+
+try:
+    rdb = redis.Redis(host="localhost", port=6379)
+except:
+    print("Error connection to Redis DB")
+    sys.exit(0)
+
 if arg_key == "--days":
-    days = True
     pdays = float(sys.argv[2]) # how many days to get stats
 elif arg_key == "--blocks":
-    days = False
     start_block = int(sys.argv[2])
     end_block   = int(sys.argv[3])
+elif arg_key == "--redis":
+    start_block = get_redis(rdb) + 1
 else:
     print(usage)
     sys.exit(0)
@@ -60,8 +69,10 @@ pp.pprint(config)
 
 props = rpc.get_dynamic_global_properties()
 block_number = props['last_irreversible_block_num']
-if days:
+if arg_key == "--days":
     start_block = block_number - int(pdays * bpd)
+    end_block   = block_number
+elif arg_key == "--redis":
     end_block   = block_number
 pp.pprint(props)
 
@@ -82,8 +93,6 @@ oper_list = ('vote',
 exchanges = ('bittrex', 'poloniex', 'blocktrades', 'openledger',
                  'hitbtc-exchange', 'hitbtc-payout', 'changelly',
                  'shapeshiftio')
-
-rdb = redis.Redis(host="localhost", port=6379)
 
 block_head = {"block_interval": block_interval,
               "start_block": start_block,
@@ -253,5 +262,7 @@ for br in range(start_block, end_block + 1):
                 
     block_count += 1
     time.sleep(pause)
+
+rdb.rpush('steem:chain', redis_key)
 
 print('Parsed %s blocks for %s' % (block_count, str(time_diff)) )

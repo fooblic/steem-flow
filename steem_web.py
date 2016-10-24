@@ -17,20 +17,22 @@ from index_html2 import *
 # config
 host = "localhost"
 port = 8787
-key = "mkf7j65khws96gkl"
+key = "steemsteemsteem"
 iface = "127.0.0.1"
+index = -1 # redis list index
+
 print "http://%s:%s/%s/" % (host, port, key)
 
 rdb = redis.Redis(host="localhost", port=6379)
 #pp = pprint.PrettyPrinter(indent=4)
 
-block_head = json.loads( rdb.get("block_head").decode() )
-redis_key = "steem:%s:%s" % (block_head["start_block"], block_head["end_block"])
-
 class Data(Resource):
     isLeaf = True
     
     def render_GET(self, request):
+        #block_head = json.loads( rdb.get("block_head").decode() )
+        #redis_key = "steem:%s:%s" % (block_head["start_block"], block_head["end_block"])
+        redis_key = rdb.lindex("steem:chain", index) # last item
         read_stats = json.loads( rdb.get(redis_key).decode() )
         #pp.pprint(read_stats)
         out = str(html_all % read_stats)
