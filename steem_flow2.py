@@ -1,36 +1,22 @@
 #!/usr/bin/env python3
-import pprint
-import time
-import sys
-import dateutil.parser
-import yaml
-import redis
-import json
-
-'''Python Library for Steem:
-https://github.com/xeroc/python-steemlib'''
-from steemapi.steemnoderpc import SteemNodeRPC
-
 '''
 Retrive and parse blocks from STEEM blockchain
 Collect average STEEM flows intensity to Redis DB
 
 Author: https://steemit.com/@fooblic
 '''
+import time
+import sys
+import dateutil.parser
+import redis
+import json
 
 # My vars
-from index_html2 import *
-from flow_vars2 import *
-from get_redis import *
+from index_html2 import * # html templates
+from flow_vars2 import *  # config, initial values
+from get_redis import *   # aux functions
 
 # get parameters from cli
-usage = '''Error arg keys.
-Usage: ./steem_flow2.py [options]
-  options:
-    --days <n>               parse blocks for <n> last days 
-    --blocks <start> <end>   parse blocks numbers from <start> to <end>
-    --redis                  parse block from last in Redis DB 
-'''
 try:
     arg_key = sys.argv[1]
 except:
@@ -54,18 +40,8 @@ else:
     print(usage)
     sys.exit(0)
 
-# My config
-my_config = yaml.load(open("steemapi.yml"))
-log = my_config['log']
-pause = my_config['pause'] # seconds
-
-rpc = SteemNodeRPC('ws://node.steem.ws')
-config = rpc.get_config()
 block_interval = config["STEEMIT_BLOCK_INTERVAL"]
 bpd = int(60 * 60 * 24 / block_interval) # blocks per day
-
-pp = pprint.PrettyPrinter(indent=4)
-pp.pprint(config)
 
 props = rpc.get_dynamic_global_properties()
 block_number = props['last_irreversible_block_num']
@@ -78,21 +54,6 @@ pp.pprint(props)
 
 last_block_time = rpc.get_block(start_block)['timestamp']
 time_last_block = dateutil.parser.parse(last_block_time)
-#pp.pprint(dys)
-
-oper_list = ('vote',
-            'comment',
-            'delete_comment',
-            'custom_json',
-            'limit_order_create',
-            'limit_order_cancel',
-            'account_create',
-            'account_update',
-            'account_witness_vote')
-
-exchanges = ('bittrex', 'poloniex', 'blocktrades', 'openledger',
-                 'hitbtc-exchange', 'hitbtc-payout', 'changelly',
-                 'shapeshiftio')
 
 block_head = {"block_interval": block_interval,
               "start_block": start_block,
@@ -100,6 +61,7 @@ block_head = {"block_interval": block_interval,
               "end_block": end_block}
 
 rdb.set("block_head", json.dumps(block_head))
+
 
 print('Start from #%s block at %s till block #%s ...' % (start_block, last_block_time, end_block) )
 
@@ -263,6 +225,6 @@ for br in range(start_block, end_block + 1):
     block_count += 1
     time.sleep(pause)
 
-rdb.rpush('steem:chain', redis_key)
+rdb.zadd('steem:blocks', redis_key, end_block)
 
 print('Parsed %s blocks for %s' % (block_count, str(time_diff)) )

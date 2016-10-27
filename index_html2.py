@@ -53,3 +53,14 @@ feed base: %(feed_count)i (%(feed_base)s), each %(feed_time)s
 '''
 
 html_all = html_head + html_block + html_cur_pow + html_trans + html_end
+
+html_slots ='''<html><head>
+<title>Steem flow 2</title></head>
+<body>
+<ul>
+{% for item in items %}
+  <li><a href="{{ http }}{{ item }}">{{ item }}</a></li>
+{% endfor %}
+</ul>
+</body>
+'''

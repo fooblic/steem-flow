@@ -1,8 +1,7 @@
-import json
 
 def get_redis(db):
     '''Get last parsed block number from redis'''
-    redis_key = db.lindex("steem:chain", -1) # last item
-    read_stats = json.loads( db.get(redis_key).decode() )
-    end = int(read_stats["br"])
-    return end
+    redis_key = db.zrange("steem:blocks", -1 , -1)[0].decode() # last item
+    end = db.zscore("steem:blocks", redis_key)
+    return int(end)
+
