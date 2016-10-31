@@ -35,11 +35,20 @@ elif arg_key == "--blocks":
     start_block = int(sys.argv[2])
     end_block   = int(sys.argv[3])
 elif arg_key == "--redis":
-    start_block = get_redis(rdb) + 1
+    start_block = get_redis(rdb, prefix + blocks_list) + 1
 else:
     print(usage)
     sys.exit(0)
 
+'''Python Library for Steem:
+https://github.com/xeroc/python-steemlib'''
+from steemapi.steemnoderpc import SteemNodeRPC
+    
+rpc = SteemNodeRPC('ws://node.steem.ws')
+config = rpc.get_config()
+if log:
+    pp.pprint(config)
+    
 block_interval = config["STEEMIT_BLOCK_INTERVAL"]
 bpd = int(60 * 60 * 24 / block_interval) # blocks per day
 
@@ -60,7 +69,7 @@ block_head = {"block_interval": block_interval,
               "last_block_time": last_block_time,
               "end_block": end_block}
 
-rdb.set("block_head", json.dumps(block_head))
+rdb.set(prefix + last_info, json.dumps(block_head))
 
 
 print('Start from #%s block at %s till block #%s ...' % (start_block, last_block_time, end_block) )
@@ -219,12 +228,13 @@ for br in range(start_block, end_block + 1):
                     "feed_time": str(feed_time)
                 }
 
-                redis_key = "steem:%s:%s" % (start_block, end_block)
+                redis_key = "%s%s:%s" % (prefix, start_block, end_block)
                 rdb.set(redis_key , json.dumps(block_stats))
                 
     block_count += 1
     time.sleep(pause)
 
-rdb.zadd('steem:blocks', redis_key, end_block)
+rdb.zadd(prefix + blocks_list, redis_key, end_block)
 
-print('Parsed %s blocks for %s' % (block_count, str(time_diff)) )
+print('Parsed %s blocks for %s from #%s to #%s' % (block_count, str(time_diff),
+                                                     start_block, end_block) )

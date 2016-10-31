@@ -10,7 +10,7 @@ Usage: ./steem_flow2.py [options]
   options:
     --days <n>               parse blocks for <n> last days 
     --blocks <start> <end>   parse blocks numbers from <start> to <end>
-    --redis                  parse block from last in Redis DB 
+    --redis                  parse blocks from last one in Redis DB 
 '''
 
 exchanges = ('bittrex', 'poloniex', 'blocktrades', 'openledger',
@@ -27,20 +27,16 @@ oper_list = ('vote',
             'account_update',
             'account_witness_vote')
 
-'''Python Library for Steem:
-https://github.com/xeroc/python-steemlib'''
-from steemapi.steemnoderpc import SteemNodeRPC
-
 # My config
 my_config = yaml.load(open("steemapi.yml"))
 log = my_config['log']
 pause = my_config['pause'] # seconds
 
-rpc = SteemNodeRPC('ws://node.steem.ws')
-config = rpc.get_config()
+prefix = my_config["prefix"]
+last_info = my_config["last_info"]
+blocks_list = my_config["blocks_list"]
 
 pp = pprint.PrettyPrinter(indent=4)
-pp.pprint(config)
 
 block_count = 0
 
