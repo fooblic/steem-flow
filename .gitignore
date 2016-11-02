@@ -5,3 +5,6 @@
 *.yml
 *.csv
 *.pyc
+*.1
+*.pkl
+*.png
