@@ -8,16 +8,49 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 from numpy import arange
 
+import pprint
+pp = pprint.PrettyPrinter(indent=4)
+
+
 # set font
 mpl.rcParams["font.family"] = "serif"
 mpl.rcParams["font.size"] = 16
 
 df = pd.read_pickle("store.pkl")
-print(df, df.columns.values)
+#print(df, df.columns.values)
 
-xtics = arange(len(df.index))
+col = len(df.index)
+print(col)
 
-#### 1
+total = {"to_ex_steem_dmin": df["to_ex_steem_dmin"].sum()/col,
+         "to_ex_sbd_dmin":   df["to_ex_sbd_dmin"].sum()/col,
+         "to_ex_steem": df["to_ex_steem"].sum()/col,
+         "to_ex_sbd":   df["to_ex_sbd"].sum()/col,
+         
+         "from_ex_steem_dmin": df["from_ex_steem_dmin"].sum()/col,
+         "from_ex_sbd_dmin": df["from_ex_sbd_dmin"].sum()/col,
+         "from_ex_steem": df["from_ex_steem"].sum()/col,
+         "from_ex_sb": df["from_ex_sb"].sum()/col,
+
+         "steem_ex_flow": df["steem_ex_flow"].sum()/col,
+         "sbd_ex_flow": df["sbd_ex_flow"].sum()/col,
+         
+         "to_null_sbd_dmin": df["to_null_sbd_dmin"].sum()/col,
+         "convert_sbd_dmin": df["convert_sbd_dmin"].sum()/col,
+         
+         "vesting_dmin": df["vesting_dmin"].sum()/col,
+         "withdraw_dmin": df["withdraw_dmin"].sum()/col
+             }
+pp.pprint(total)
+
+rate = {"rate_steem": total["to_ex_steem_dmin"]/total["from_ex_steem_dmin"],
+        "rate_sbd":   total["to_ex_sbd_dmin"]/total["from_ex_sbd_dmin"]
+            }
+pp.pprint(rate)
+    
+xtics = arange(col)
+
+#### 1 STEEM - exchange
 plt.figure(1)
 plt.bar(xtics-0.2, df["to_ex_steem_dmin"],
             width=0.4,
@@ -36,7 +69,7 @@ plt.autoscale(tight=True)
 plt.subplots_adjust(bottom = 0.32)
 plt.savefig("steem_ex.png")
 
-#### 2
+#### 2 SBD - exchange
 plt.figure(2)
 plt.bar(xtics-0.2, df["to_ex_sbd_dmin"],
             width=0.4,
@@ -55,7 +88,7 @@ plt.autoscale(tight=True)
 plt.subplots_adjust(bottom = 0.32)
 plt.savefig("sbd_ex.png")
 
-#### 3
+#### 3 Ratio
 def ratio(Series):
     if Series < 1:
         Series = (-1) / Series
@@ -81,4 +114,4 @@ plt.autoscale(tight=True)
 plt.subplots_adjust(bottom = 0.32)
 plt.savefig("flow_ratio.png")
 
-plt.show()
+#plt.show()
