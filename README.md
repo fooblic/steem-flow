@@ -1,23 +1,67 @@
 # STEEM flow
 
-Online transaction monitoring starting from last block in STEEM blockchain and calculate average STEEM & SBD flows intensity and ratio.
+STEEM blockchain transaction monitoring tool:
 
-* http://steemit.com/@fooblic
+* Calculate average STEEM & SBD flows intensity and ratio
+* Store data in database (Redis DB)
+* Display stored data over web-server (Twisted framework)
+* Plot statistics graphics (Pandas, Matplotlib)
+
+[http://steemit.com/@fooblic](http://steemit.com/@fooblic)
+
+![steem_flow161106.svg.png](steem_flow161106.svg.png)
 
 ## steem_flow2
 
-Collect average STEEM flow intensity data to Redis DB for certain days. The number of last days statistics setting by command:
+Collect average STEEM flow intensity data to Redis DB for certain days, certain blocks or from last stored block in Redis:
 ```
-$ ./steem_flow2.py 10 &
+$ ./steem_flow2.py
+Usage: ./steem_flow2.py [options]
+  options:
+    --days <n>               parse blocks for <n> last days 
+    --blocks <start> <end>   parse blocks numbers from <start> to <end>
+    --redis                  parse blocks from last one in Redis DB 
+```
+It is convenient to start the script by cron every day at 0:00.
+
+The data in Redis arranged as follow by slots with names "steem:start_block:stop:block" and score "end_block":
+```
+fooblic@vps:~$ redis-cli
+127.0.0.1:6379> zrange steem:blocks 0 -1 withscores
+ 1) "steem:6068640:6097440"
+ 2) "6097440"
+ 3) "steem:6097426:6126232"
+ 4) "6126232"
+...
+25) "steem:6413802:6442575"
+26) "6442575"
+27) "steem:6442576:6471371"
+28) "6471371"
 ```
 
-Simple web-server to display flow data from Redis DB:
+### Simple web-server
+Display flow data from Redis DB:
 ```
 $ ./steem_web.py &
-http://localhost:8787/mkf7j65khws96gkl/
+http://localhost:8787/steemslots
+
+    steem:6068640:6097440
+    steem:6097426:6126232
+    steem:6126233:6155023
+    steem:6155013:6183726
+    steem:6183727:6212520
+    steem:6212521:6241307
+    steem:6241308:6270096
+    steem:6270097:6298880
+    steem:6298881:6327479
+    steem:6327480:6356273
+    steem:6356274:6385036
+    steem:6385037:6413801
+    steem:6413802:6442575
+    steem:6442576:6471371
 ```
 
-Output:
+Statistics from certain slot:
 ```
 block_interval: 3 
  from_last_block: 5662618 timestamp: 2016-10-08T21:23:33 
@@ -35,7 +79,7 @@ block_interval: 3
  to_null: 743 (1651.0 SBD) @ 0.1 $pm 
 
  vesting: 4436 (516711.3 STEEM) @ 44.1 spm 
- new withdraw: 270 (7492.2 MV) @  MV per min 
+ new withdraw: 270 (7492.2 MV) @  0.64 MV per min 
 
  convert: 270 (149806.0 SBD) @ 12.8 $pm 
  feed base: 3977 (0.264 SBD), each 0:02:56.502892
@@ -45,8 +89,32 @@ spm - STEEM per minute
 
 $pm - SBD per minute
 
+### Export data and plot graphics
+
+Export data from Redis to Python pickle file `store.pkl` from start to end block:
+```
+fooblic@vps:~$ ./steem/flow_data_export.py 6068640 6471371
+```
+The data exported and saved as a Pandas dataframe.
+
+Plot statistics graphics from dataframe with Python matplotlib:
+```
+$ ./steem_plot.py
+```
+
+![steem_ex.png](steem_ex.png)
+
+![sbd_ex.png](sbd_ex.png)
+
+![flow_ratio.png](flow_ratio.png)
+
+![convert_sbd.png](convert_sbd.png)
+
+![steem_power.png](steem_power.png)
 
 ## steem_flow.py
+
+Online transaction monitoring starting from last block in STEEM blockchain and calculate average STEEM & SBD flows intensity and ratio.
 
 Update collected data to index.html file for each interval.
 
