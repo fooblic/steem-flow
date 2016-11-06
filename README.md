@@ -7,7 +7,7 @@ STEEM blockchain transaction monitoring tool:
 * Display stored data over web-server (Twisted framework)
 * Plot statistics graphics (Pandas, Matplotlib)
 
-[http://steemit.com/@fooblic](http://steemit.com/@fooblic)
+[https://steemit.com/@fooblic](https://steemit.com/@fooblic)
 
 ![steem_flow161106.svg.png](steem_flow161106.svg.png)
 
