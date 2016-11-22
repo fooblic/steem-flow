@@ -15,23 +15,24 @@ from jinja2 import Template
 
 # template
 from index_html2 import *
+from get_redis import get_slot_dates
 
 # config
-my_config = yaml.load(open("steemapi.yml"))
-log = my_config['log']
-prefix = my_config["prefix"]
-last_info = my_config["last_info"]
+my_config = yaml.load(open("./steem_flow/steemapi.yml"))
+log         = my_config['log']
+prefix      = my_config["prefix"]
+last_info   = my_config["last_info"]
 blocks_list = my_config["blocks_list"]
 
-host = "localhost"
-port = 8787
-key = "steem"
-iface = "127.0.0.1"
+host  = my_config["host"]
+port  = my_config["port"]
+key   = my_config["key"]
+iface = my_config["iface"]
 
 url = "http://%s:%s/%s/" % (host, port, key)
 print url
 
-rdb = redis.Redis(host="localhost", port=6379)
+rdb = redis.Redis(host=my_config["redis_host"], port=my_config["redis_port"])
 pp = pprint.PrettyPrinter(indent=4)
 
 template = Template(html_slots)
@@ -52,7 +53,14 @@ class Slots(Resource):
     
     def render_GET(self, request):
         redis_keys = rdb.zrange(prefix + blocks_list, 0, -1) # list all items
-        out = template.render(http = "http://%s:%s/%s" % (host, port, key + "slot/") , items = redis_keys)
+
+        slot_dates = []
+        for each in redis_keys:
+            slot_dates.append( get_slot_dates(rdb, each) )
+        
+        out = template.render(http = "http://%s:%s/%s" % (host, port, key + "slot/"),
+                              items = redis_keys,
+                              dates = slot_dates)
         return str(out)
 
 class Slot(Resource):

@@ -9,16 +9,16 @@ import yaml
 import pprint
 import pandas as pd
 
-from get_redis import * 
+from get_redis import *
 
 # config
-my_config = yaml.load(open("steemapi.yml"))
-log = my_config['log']
-prefix = my_config["prefix"]
-last_info = my_config["last_info"]
+my_config = yaml.load(open("./steem_flow/steemapi.yml"))
+log         = my_config['log']
+prefix      = my_config["prefix"]
+last_info   = my_config["last_info"]
 blocks_list = my_config["blocks_list"]
 
-rdb = redis.Redis(host="localhost", port=6379)
+rdb = redis.Redis(host=my_config["redis_host"], port=my_config["redis_port"])
 pp = pprint.PrettyPrinter(indent=4)
 
 # from cli
@@ -37,4 +37,4 @@ for redis_key in slot_list:
 
 print(df, df.columns.values)
 
-df.to_pickle("store.pkl")
+df.to_pickle(my_config["pickle_file"])

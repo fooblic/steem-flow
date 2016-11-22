@@ -4,7 +4,7 @@ HTML templates for steem_flow2.py
 '''
 html_head = '''<html><head>
 <meta content="text/html; charset=utf-8" http-equiv="content-type">
-<meta http-equiv="refresh" content="3" >
+
 <title>STEEM transfer statistics</title></head>
 <body>'''
 
@@ -54,13 +54,31 @@ feed base: %(feed_count)i (%(feed_base)s), each %(feed_time)s
 
 html_all = html_head + html_block + html_cur_pow + html_trans + html_end
 
+# Jinja2 template
 html_slots ='''<html><head>
-<title>Steem flow 2</title></head>
+<title>Steem flow 2 by @fooblic</title></head>
 <body>
-<ul>
+
+<table>
+<tr>
+<td>
+<ol>
 {% for item in items %}
-  <li><a href="{{ http }}{{ item }}">{{ item }}</a></li>
+  <li><a href="{{ http }}{{ item }}">{{ item }}</a> </li>
+{% endfor %}
+</ol>
+</td>
+
+<td>
+<ul style="list-style-type:none">
+{% for slot_date in dates %}
+    <li>{{slot_date}}</li>
 {% endfor %}
 </ul>
+</td>
+</tr>
+</table>
+
 </body>
+</html>
 '''

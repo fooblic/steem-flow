@@ -3,6 +3,7 @@
 Get data from Pandas dataframe and aggregate together slot's records
 Plot STEEM flow graphics 
 '''
+import yaml
 import pandas as pd
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -18,7 +19,8 @@ pp = pprint.PrettyPrinter(indent=4)
 mpl.rcParams["font.family"] = "serif"
 mpl.rcParams["font.size"] = 16
 
-df = pd.read_pickle("store.pkl")
+my_config = yaml.load(open("steemapi.yml"))
+df = pd.read_pickle(my_config["pickle_file"])
 #print(df, df.columns.values)
 
 col = len(df.index)
