@@ -1,15 +1,16 @@
 #!/usr/bin/python3
 '''
 Get data from Pandas dataframe and aggregate together slot's records
-Plot STEEM flow graphics 
+Plot STEEM flow graphics daily/weekly/monthly
 '''
 import yaml
 import pandas as pd
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from numpy import arange
+import datetime
 
-steem_per_mvests = 425. # from https://steemd.com/
+steem_per_mvests = 462 # from https://steemd.com/
 print("steem_per_mvests: ", steem_per_mvests)
 
 import pprint
@@ -21,7 +22,7 @@ mpl.rcParams["font.size"] = 16
 
 my_config = yaml.load(open("steemapi.yml"))
 df = pd.read_pickle(my_config["pickle_file"])
-#print(df, df.columns.values)
+img_path = my_config["img_path"]
 
 col = len(df.index)
 print(col, " slots")
@@ -34,26 +35,79 @@ def get_sbd(Series):
 convert_steem_dmin = df["convert_sbd_dmin"]/df["feed_base"].map(get_sbd)
 withdraw_steem_dmin = df["withdraw_dmin"] * steem_per_mvests
 
-total = {"to_ex_steem_dmin": df["to_ex_steem_dmin"].sum()/col,
-         "to_ex_sbd_dmin":   df["to_ex_sbd_dmin"].sum()/col,
-         #"to_ex_steem": df["to_ex_steem"].sum()/col,
-         #"to_ex_sbd":   df["to_ex_sbd"].sum()/col,
+def get_week(Series):
+    '''Get a week number of a year'''
+    return datetime.datetime.strptime(Series, "%Y-%m-%dT%H:%M:%S").isocalendar()[1]
+
+def get_month(Series):
+    '''Get a month number of a year'''
+    return datetime.datetime.strptime(Series, "%Y-%m-%dT%H:%M:%S").month
+
+df["week"] = df["dys_ts"].map(get_week)
+df["month"] = df["dys_ts"].map(get_month)
+print(df, df.columns.values)
+
+index_list = ["to_ex_steem_dmin",
+           "to_ex_sbd_dmin",
+           "from_ex_steem_dmin",
+           "from_ex_sbd_dmin",
+           "to_null_sbd_dmin",
+           "convert_sbd_dmin",
+           "convert_spm_dmin",
+           "vesting_dmin",
+           "withdraw_dmin",
+           "withdraw_spm_dmin"]
+
+monthes = set(df["month"])
+monthly = pd.DataFrame(index = index_list, columns = list(monthes))
+    
+weeks = set(df["week"])
+weekly = pd.DataFrame(index = index_list, columns = list(weeks))
+
+def aggregate_data(col_name, set_in, df_out):
+
+    for numb in set_in:
+        df_agg = df[df[col_name] == numb]
+        col_days = len(df_agg.index)
+
+        agg_convert_steem_dmin  = df_agg["convert_sbd_dmin"]/df_agg["feed_base"].map(get_sbd)
+        agg_withdraw_steem_dmin = df_agg["withdraw_dmin"] * steem_per_mvests
+
+        df_out[numb] = pd.Series({"to_ex_steem_dmin":   df_agg["to_ex_steem_dmin"].sum()/col_days,
+                      "to_ex_sbd_dmin":     df_agg["to_ex_sbd_dmin"].sum()/col_days,
+
+                      "from_ex_steem_dmin": df_agg["from_ex_steem_dmin"].sum()/col_days,
+                      "from_ex_sbd_dmin":   df_agg["from_ex_sbd_dmin"].sum()/col_days,
+
+                      "to_null_sbd_dmin":   df_agg["to_null_sbd_dmin"].sum()/col_days,
+                      "convert_sbd_dmin":   df_agg["convert_sbd_dmin"].sum()/col_days,
+                      "convert_spm_dmin":   agg_convert_steem_dmin.sum()/col_days,
+
+                      "vesting_dmin":       df_agg["vesting_dmin"].sum()/col_days,
+                      "withdraw_dmin":      df_agg["withdraw_dmin"].sum()/col_days,
+                      "withdraw_spm_dmin":  agg_withdraw_steem_dmin.sum()/col_days
+        })
+    return df_out
+
+weekly_df = aggregate_data("week", weeks, weekly).T
+monthly_df = aggregate_data("month", monthes, monthly).T
+
+print(weekly_df)
+print(monthly_df)
+
+total = {"to_ex_steem_dmin":   df["to_ex_steem_dmin"].sum()/col,
+         "to_ex_sbd_dmin":     df["to_ex_sbd_dmin"].sum()/col,
          
          "from_ex_steem_dmin": df["from_ex_steem_dmin"].sum()/col,
          "from_ex_sbd_dmin":   df["from_ex_sbd_dmin"].sum()/col,
-         #"from_ex_steem": df["from_ex_steem"].sum()/col,
-         #"from_ex_sb": df["from_ex_sb"].sum()/col,
-
-         #"steem_ex_flow": df["steem_ex_flow"].sum()/col,
-         #"sbd_ex_flow": df["sbd_ex_flow"].sum()/col,
+ 
+         "to_null_sbd_dmin":   df["to_null_sbd_dmin"].sum()/col,
+         "convert_sbd_dmin":   df["convert_sbd_dmin"].sum()/col,
+         "convert_spm_dmin":   convert_steem_dmin.sum()/col,
          
-         "to_null_sbd_dmin":  df["to_null_sbd_dmin"].sum()/col,
-         "convert_sbd_dmin":  df["convert_sbd_dmin"].sum()/col,
-         "convert_spm_dmin:": convert_steem_dmin.sum()/col,
-         
-         "vesting_dmin":      df["vesting_dmin"].sum()/col,
-         "withdraw_dmin":     df["withdraw_dmin"].sum()/col,
-         "withdraw_spm_dmin": withdraw_steem_dmin.sum()/col
+         "vesting_dmin":       df["vesting_dmin"].sum()/col,
+         "withdraw_dmin":      df["withdraw_dmin"].sum()/col,
+         "withdraw_spm_dmin":  withdraw_steem_dmin.sum()/col
 }
 pp.pprint(total)
 
@@ -82,7 +136,7 @@ plt.xlabel("Date")
 plt.ylabel("STEEM per minute")
 plt.autoscale(tight=True)
 plt.subplots_adjust(bottom = 0.32)
-plt.savefig("steem_ex.png")
+plt.savefig(img_path + "daily_steem_ex.png")
 
 #### 2 SBD - exchange
 plt.figure(2)
@@ -101,7 +155,7 @@ plt.xlabel("Date")
 plt.ylabel("SBD per minute")
 plt.autoscale(tight=True)
 plt.subplots_adjust(bottom = 0.32)
-plt.savefig("sbd_ex.png")
+plt.savefig(img_path + "daily_sbd_ex.png")
 
 #### 3 Ratio
 def ratio(Series):
@@ -127,8 +181,7 @@ plt.xlabel("Date")
 plt.ylabel("Ratio")
 plt.autoscale(tight=True)
 plt.subplots_adjust(bottom = 0.32)
-plt.savefig("flow_ratio.png")
-
+plt.savefig(img_path + "daily_flow_ratio.png")
 
 #### 4 Convert
 plt.figure(4)
@@ -147,8 +200,7 @@ plt.xlabel("Date")
 plt.ylabel("SBD per minute")
 plt.autoscale(tight=True)
 plt.subplots_adjust(bottom = 0.32)
-plt.savefig("convert_sbd.png")
-
+plt.savefig(img_path + "daily_convert_sbd.png")
 
 #### 5 Vesting
 plt.figure(5)
@@ -167,6 +219,197 @@ plt.xlabel("Date")
 plt.ylabel("STEEM per minute")
 plt.autoscale(tight=True)
 plt.subplots_adjust(bottom = 0.32)
-plt.savefig("steem_power.png")
+plt.savefig(img_path + "daily_sp.png")
+
+
+################## Weekly/Monthly graphs
+
+def plot_pic(pic):
+    #### 1 STEEM - exchange
+    plt.figure(pic["num"])
+    plt.bar(pic["xtics"]-0.2, pic["df1"],
+                width=0.4,
+                color="blue",
+                label=pic["x_legend"])
+    plt.bar(pic["xtics"]+0.2, pic["df2"],
+                width=0.4,
+                color="lightblue",
+                label=pic["y_legend"])
+    plt.legend(loc = "best")
+    plt.xticks(pic["xtics"], pic["df1"].index.values)
+    plt.title(pic["title"])
+    plt.xlabel(pic["x_label"])
+    plt.ylabel(pic["y_label"])
+    plt.autoscale(tight=True)
+    plt.subplots_adjust(bottom = pic["bottom"])
+    plt.savefig(img_path + pic["fname"])
+
+# STEEM flow rate
+weekr  = arange( len( list( weekly_df.index.values )))
+monthr = arange( len( list( monthly_df.index.values )))
+    
+pnum = 6
+pic = {}
+pic["title"]    = "Weekly STEEM flow rate"
+pic["num"]      = pnum
+pic["xtics"]    = weekr
+pic["df1"]      = weekly_df["to_ex_steem_dmin"]
+pic["df2"]      = weekly_df["from_ex_steem_dmin"]
+pic["x_legend"] = "to exchanges"
+pic["y_legend"] = "from exchanges"
+pic["x_label"]  = "Week number"
+pic["y_label"]  = "STEEM per minute"
+pic["bottom"]   = 0.1
+pic["fname"]    = "weekly_steem_ex.png"
+print(pnum, pic["title"])
+plot_pic(pic)
+
+pnum += 1
+pic = {}
+pic["title"]    = "Monthly STEEM flow rate"
+pic["num"]      = pnum
+pic["xtics"]    = monthr
+pic["df1"]      = monthly_df["to_ex_steem_dmin"]
+pic["df2"]      = monthly_df["from_ex_steem_dmin"]
+pic["x_legend"] = "to exchanges"
+pic["y_legend"] = "from exchanges"
+pic["x_label"]  = "Month number"
+pic["y_label"]  = "STEEM per minute"
+pic["bottom"]   = 0.1
+pic["fname"]    = "monthly_steem_ex.png"
+print(pnum, pic["title"])
+plot_pic(pic)
+
+# SBD flow rate
+pnum += 1
+pic = {}
+pic["title"]    = "Weekly SBD flow rate"
+pic["num"]      = pnum
+pic["xtics"]    = weekr
+pic["df1"]      = weekly_df["to_ex_sbd_dmin"]
+pic["df2"]      = weekly_df["from_ex_sbd_dmin"]
+pic["x_legend"] = "to exchanges"
+pic["y_legend"] = "from exchanges"
+pic["x_label"]  = "Week number"
+pic["y_label"]  = "SBD per minute"
+pic["bottom"]   = 0.1
+pic["fname"]    = "weekly_sbd_ex.png"
+print(pnum, pic["title"])
+plot_pic(pic)
+
+pnum += 1
+pic = {}
+pic["title"]    = "Monthly SBD flow rate"
+pic["num"]      = pnum
+pic["xtics"]    = monthr
+pic["df1"]      = monthly_df["to_ex_sbd_dmin"]
+pic["df2"]      = monthly_df["from_ex_sbd_dmin"]
+pic["x_legend"] = "to exchanges"
+pic["y_legend"] = "from exchanges"
+pic["x_label"]  = "Month number"
+pic["y_label"]  = "SBD per minute"
+pic["bottom"]   = 0.1
+pic["fname"]    = "monthly_sbd_ex.png"
+print(pnum, pic["title"])
+plot_pic(pic)
+
+# To/From exchanges flow ratio
+pnum += 1
+pic = {}
+pic["title"]    = "Weekly To/From exchanges flow ratio"
+pic["num"]      = pnum
+pic["xtics"]    = weekr
+pic["df1"]      = (weekly_df["to_ex_steem_dmin"]/weekly_df["from_ex_steem_dmin"]).map(ratio)
+pic["df2"]      = (weekly_df["to_ex_sbd_dmin"]/weekly_df["from_ex_sbd_dmin"]).map(ratio)
+pic["x_legend"] = "STEEM to/from exchanges ratio"
+pic["y_legend"] = "SBD to/from exchanges ratio"
+pic["x_label"]  = "Week number"
+pic["y_label"]  = "Ratio"
+pic["bottom"]   = 0.1
+pic["fname"]    = "weekly_flow_ratio.png"
+print(pnum, pic["title"])
+plot_pic(pic)
+
+pnum += 1
+pic = {}
+pic["title"]    = "Monthly To/From exchanges flow ratio"
+pic["num"]      = pnum
+pic["xtics"]    = monthr
+pic["df1"]      = (monthly_df["to_ex_steem_dmin"]/monthly_df["from_ex_steem_dmin"]).map(ratio)
+pic["df2"]      = (monthly_df["to_ex_sbd_dmin"]/monthly_df["from_ex_sbd_dmin"]).map(ratio)
+pic["x_legend"] = "STEEM to/from exchanges ratio"
+pic["y_legend"] = "SBD to/from exchanges ratio"
+pic["x_label"]  = "Month number"
+pic["y_label"]  = "Ratio"
+pic["bottom"]   = 0.1
+pic["fname"]    = "monthly_flow_ratio.png"
+print(pnum, pic["title"])
+plot_pic(pic)
+
+# SBD convert
+pnum += 1
+pic = {}
+pic["title"]    = "Weekly SBD convert"
+pic["num"]      = pnum
+pic["xtics"]    = weekr
+pic["df1"]      = weekly_df["convert_sbd_dmin"]
+pic["df2"]      = weekly_df["to_null_sbd_dmin"]
+pic["x_legend"] = "convert"
+pic["y_legend"] = "to null"
+pic["x_label"]  = "Week number"
+pic["y_label"]  = "SBD per minute"
+pic["bottom"]   = 0.1
+pic["fname"]    = "weekly_convert_sbd.png"
+print(pnum, pic["title"])
+plot_pic(pic)
+
+pnum += 1
+pic = {}
+pic["title"]    = "Monthly SBD convert"
+pic["num"]      = pnum
+pic["xtics"]    = monthr
+pic["df1"]      = monthly_df["convert_sbd_dmin"]
+pic["df2"]      = monthly_df["to_null_sbd_dmin"]
+pic["x_legend"] = "convert"
+pic["y_legend"] = "to null"
+pic["x_label"]  = "Month number"
+pic["y_label"]  = "SBD per minute"
+pic["bottom"]   = 0.1
+pic["fname"]    = "monthly_convert_sbd.png"
+print(pnum, pic["title"])
+plot_pic(pic)
+
+# STEEM vesting/withdraw
+pnum += 1
+pic = {}
+pic["title"]    = "Weekly STEEM vesting/withdraw"
+pic["num"]      = pnum
+pic["xtics"]    = weekr
+pic["df1"]      = weekly_df["vesting_dmin"]
+pic["df2"]      = weekly_df["withdraw_spm_dmin"]
+pic["x_legend"] = "power up"
+pic["y_legend"] = "power down"
+pic["x_label"]  = "Week number"
+pic["y_label"]  = "STEEM per minute"
+pic["bottom"]   = 0.1
+pic["fname"]    = "weekly_sp.png"
+print(pnum, pic["title"])
+plot_pic(pic)
+
+pnum += 1
+pic = {}
+pic["title"]    = "Monthly STEEM vesting/withdraw"
+pic["num"]      = pnum
+pic["xtics"]    = monthr
+pic["df1"]      = monthly_df["vesting_dmin"]
+pic["df2"]      = monthly_df["withdraw_spm_dmin"]
+pic["x_legend"] = "power up"
+pic["y_legend"] = "power down"
+pic["x_label"]  = "Month number"
+pic["y_label"]  = "STEEM per minute"
+pic["bottom"]   = 0.1
+pic["fname"]    = "monthly_sp.png"
+print(pnum, pic["title"])
+plot_pic(pic)
 
 #plt.show()

@@ -9,11 +9,11 @@ STEEM blockchain transaction monitoring tool:
 
 [https://steemit.com/@fooblic](https://steemit.com/@fooblic)
 
-![steem_flow161106.svg.png](steem_flow161106.svg.png)
+![steem_flow161127.svg.png](steem_flow161127.svg.png)
 
 ## steem_flow2
 
-Collect average STEEM flow intensity data to Redis DB for certain days, certain blocks or from last stored block in Redis:
+Collect average STEEM flow intensity data for certain days, certain blocks or from last stored block in Redis DB:
 ```
 $ ./steem_flow2.py
 Usage: ./steem_flow2.py [options]
@@ -24,7 +24,7 @@ Usage: ./steem_flow2.py [options]
 ```
 It is convenient to start the script by cron every day at 0:00.
 
-The data in Redis arranged as follow by slots with names "steem:start_block:stop:block" and score "end_block":
+The data in Redis DB is arranged as follow by slots with names "steem:start_block:stop_block" and score "end_block":
 ```
 fooblic@vps:~$ redis-cli
 127.0.0.1:6379> zrange steem:blocks 0 -1 withscores
@@ -45,20 +45,9 @@ Display flow data from Redis DB:
 $ ./steem_web.py &
 http://localhost:8787/steemslots
 
-    steem:6068640:6097440
-    steem:6097426:6126232
-    steem:6126233:6155023
-    steem:6155013:6183726
-    steem:6183727:6212520
-    steem:6212521:6241307
-    steem:6241308:6270096
-    steem:6270097:6298880
-    steem:6298881:6327479
-    steem:6327480:6356273
-    steem:6356274:6385036
-    steem:6385037:6413801
-    steem:6413802:6442575
-    steem:6442576:6471371
+1. steem:6068640:6097440    2016-10-22T23:58:21 - 2016-10-23T23:58:09
+2. steem:6097426:6126232    2016-10-23T23:58:12 - 2016-10-24T23:59:06
+3. steem:6126233:6155023    2016-10-24T23:59:09 - 2016-10-25T23:58:33
 ```
 
 Statistics from certain slot:
@@ -101,16 +90,25 @@ Plot statistics graphics from dataframe with Python matplotlib:
 ```
 $ ./steem_plot.py
 ```
+![daily_steem_ex.png](daily_steem_ex.png)
+![weekly_steem_ex.png](weekly_steem_ex.png)
+![monthly_steem_ex.png](monthly_steem_ex.png)
 
-![steem_ex.png](steem_ex.png)
+![daily_sbd_ex.png](daily_sbd_ex.png)
+![weekly_sbd_ex.png](weekly_sbd_ex.png)
+![monthly_sbd_ex.png](monthly_sbd_ex.png)
 
-![sbd_ex.png](sbd_ex.png)
+![daily_flow_ratio.png](daily_flow_ratio.png)
+![weekly_flow_ratio.png](weekly_flow_ratio.png)
+![monthly_flow_ratio.png](monthly_flow_ratio.png)
 
-![flow_ratio.png](flow_ratio.png)
+![daily_convert_sbd.png](daily_convert_sbd.png)
+![weekly_convert_sbd.png](weekly_convert_sbd.png)
+![monthly_convert_sbd.png](monthly_convert_sbd.png)
 
-![convert_sbd.png](convert_sbd.png)
-
-![steem_power.png](steem_power.png)
+![daily_sp.png](daily_sp.png)
+![weekly_sp.png](weekly_sp.png)
+![monthly_sp.png](monthly_sp.png)
 
 ## steem_flow.py
 
