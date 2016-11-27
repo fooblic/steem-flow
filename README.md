@@ -90,25 +90,25 @@ Plot statistics graphics from dataframe with Python matplotlib:
 ```
 $ ./steem_plot.py
 ```
-![daily_steem_ex.png](daily_steem_ex.png)
-![weekly_steem_ex.png](weekly_steem_ex.png)
-![monthly_steem_ex.png](monthly_steem_ex.png)
+![daily_steem_ex.png](img/daily_steem_ex.png)
+![weekly_steem_ex.png](img/weekly_steem_ex.png)
+![monthly_steem_ex.png](img/monthly_steem_ex.png)
 
-![daily_sbd_ex.png](daily_sbd_ex.png)
-![weekly_sbd_ex.png](weekly_sbd_ex.png)
-![monthly_sbd_ex.png](monthly_sbd_ex.png)
+![daily_sbd_ex.png](img/daily_sbd_ex.png)
+![weekly_sbd_ex.png](img/weekly_sbd_ex.png)
+![monthly_sbd_ex.png](img/monthly_sbd_ex.png)
 
-![daily_flow_ratio.png](daily_flow_ratio.png)
-![weekly_flow_ratio.png](weekly_flow_ratio.png)
-![monthly_flow_ratio.png](monthly_flow_ratio.png)
+![daily_flow_ratio.png](img/daily_flow_ratio.png)
+![weekly_flow_ratio.png](img/weekly_flow_ratio.png)
+![monthly_flow_ratio.png](img/monthly_flow_ratio.png)
 
-![daily_convert_sbd.png](daily_convert_sbd.png)
-![weekly_convert_sbd.png](weekly_convert_sbd.png)
-![monthly_convert_sbd.png](monthly_convert_sbd.png)
+![daily_convert_sbd.png](img/daily_convert_sbd.png)
+![weekly_convert_sbd.png](img/weekly_convert_sbd.png)
+![monthly_convert_sbd.png](img/monthly_convert_sbd.png)
 
-![daily_sp.png](daily_sp.png)
-![weekly_sp.png](weekly_sp.png)
-![monthly_sp.png](monthly_sp.png)
+![daily_sp.png](img/daily_sp.png)
+![weekly_sp.png](img/weekly_sp.png)
+![monthly_sp.png](img/monthly_sp.png)
 
 ## steem_flow.py
 
