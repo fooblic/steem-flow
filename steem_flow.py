@@ -13,10 +13,11 @@ from flow_vars import *
 
 # My config
 my_config = yaml.load(open("steemapi.yml"))
-log = my_config['log']
+log =        my_config['log']
+pause =      my_config['pause'] # seconds
 index_file = my_config['index_file']
 
-rpc = SteemNodeRPC('ws://node.steem.ws')
+rpc = SteemNodeRPC(my_config['rpc'])
 config = rpc.get_config()
 block_interval = config["STEEMIT_BLOCK_INTERVAL"]
 
@@ -56,6 +57,8 @@ while True:
     time_dys = dateutil.parser.parse(dys['timestamp'])
     time_diff = time_dys - time_last_block
     dmin = time_diff.days*24*60 + time_diff.seconds/60
+    if dmin == 0: # no div 0
+        dmin = pause * 60
     txs = dys['transactions']
     
     for tx in txs:

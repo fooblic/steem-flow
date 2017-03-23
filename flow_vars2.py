@@ -29,11 +29,13 @@ oper_list = ('vote',
 
 # My config
 my_config = yaml.load(open("steemapi.yml"))
-log = my_config['log']
+log =   my_config['log']
 pause = my_config['pause'] # seconds
 
-prefix = my_config["prefix"]
-last_info = my_config["last_info"]
+rpc_node = my_config['rpc']
+
+prefix =      my_config["prefix"]
+last_info =   my_config["last_info"]
 blocks_list = my_config["blocks_list"]
 
 pp = pprint.PrettyPrinter(indent=4)

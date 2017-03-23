@@ -44,7 +44,7 @@ else:
 https://github.com/xeroc/python-steemlib'''
 from steemapi.steemnoderpc import SteemNodeRPC
     
-rpc = SteemNodeRPC('ws://node.steem.ws')
+rpc = SteemNodeRPC(rpc_node)
 config = rpc.get_config()
 if log:
     pp.pprint(config)
