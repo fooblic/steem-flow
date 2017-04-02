@@ -10,9 +10,6 @@ import matplotlib.pyplot as plt
 from numpy import arange
 import datetime
 
-steem_per_mvests = 462 # from https://steemd.com/
-print("steem_per_mvests: ", steem_per_mvests)
-
 import pprint
 pp = pprint.PrettyPrinter(indent=4)
 
@@ -22,7 +19,10 @@ mpl.rcParams["font.size"] = 16
 
 my_config = yaml.load(open("steemapi.yml"))
 df = pd.read_pickle(my_config["pickle_file"])
-img_path = my_config["img_path"]
+img_path = my_config["img_path"] # to save plots
+
+steem_per_mvests = my_config["steem_per_mvests"] # from https://steemd.com/
+print("steem_per_mvests: ", steem_per_mvests)
 
 col = len(df.index)
 print(col, " slots")
@@ -129,7 +129,7 @@ plt.bar(xtics+0.2, df["from_ex_steem_dmin"],
             width=0.4,
             color="lightblue",
             label="from exchanges")
-plt.legend(loc = "upper left")
+plt.legend(loc = "upper right")
 plt.xticks(xtics, df["dys_ts"], rotation = 90)
 plt.title("STEEM flow rate")
 plt.xlabel("Date")
