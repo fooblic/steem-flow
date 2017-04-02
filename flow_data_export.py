@@ -8,6 +8,7 @@ import json
 import yaml
 import pprint
 import pandas as pd
+import sys
 
 from get_redis import *
 
@@ -22,8 +23,12 @@ rdb = redis.Redis(host=my_config["redis_host"], port=my_config["redis_port"])
 pp = pprint.PrettyPrinter(indent=4)
 
 # from cli
-start_block = int(sys.argv[1])
-end_block   = int(sys.argv[2])
+try:
+    start_block = int(sys.argv[1])
+    end_block   = int(sys.argv[2])
+except:
+    print("Usage: flow_data_export <start_block> <end_block>")
+    sys.exit(0)
 
 slot_list = get_list(rdb, prefix + blocks_list, start_block, end_block)
 #pp.pprint(slot_list)
