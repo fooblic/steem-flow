@@ -169,3 +169,7 @@ block_interval: 3
 ```
 
 ![steem_flow2](steem_flow2.svg.png "STEEM flow diagram")
+
+## Requirement
+
+[piston-lib](https://github.com/xeroc/piston-lib)

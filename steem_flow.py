@@ -5,7 +5,7 @@ import sys
 import dateutil.parser
 import yaml
 
-from steemapi.steemnoderpc import SteemNodeRPC
+from pistonapi.steemnoderpc import SteemNodeRPC
 
 # My vars
 from index_html import *

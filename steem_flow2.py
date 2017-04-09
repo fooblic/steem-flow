@@ -11,6 +11,10 @@ import dateutil.parser
 import redis
 import json
 
+'''Python Library for Steem:
+https://github.com/xeroc/piston-lib'''
+from pistonapi.steemnoderpc import SteemNodeRPC
+
 # My vars
 from index_html2 import * # html templates
 from flow_vars2 import *  # config, initial values
@@ -40,15 +44,11 @@ else:
     print(usage)
     sys.exit(0)
 
-'''Python Library for Steem:
-https://github.com/xeroc/python-steemlib'''
-from steemapi.steemnoderpc import SteemNodeRPC
-    
 rpc = SteemNodeRPC(rpc_node)
 config = rpc.get_config()
 if log:
     pp.pprint(config)
-    
+
 block_interval = config["STEEMIT_BLOCK_INTERVAL"]
 bpd = int(60 * 60 * 24 / block_interval) # blocks per day
 
@@ -83,7 +83,7 @@ for br in range(start_block, end_block + 1):
     if dmin == 0: # no div 0
         dmin = pause * 60
     txs = dys['transactions']
-    
+
     for tx in txs:
 
         for operation in tx['operations']:
@@ -149,12 +149,12 @@ for br in range(start_block, end_block + 1):
                 if operation[0] == 'withdraw_vesting':
                     trans_withd += 1
                     withdraw += float(operation[1]['vesting_shares'].split()[0])
-                        
+
                 if operation[0] == 'feed_publish':
                     feed_count += 1
                     feed_time = time_diff / feed_count
                     feed_base = operation[1]['exchange_rate']['base']
-                    
+
                 if operation[0] == 'convert':
                     convert += 1
                     amount = operation[1]['amount'].split()
@@ -178,24 +178,24 @@ for br in range(start_block, end_block + 1):
                 block_stats = {"block_interval": block_interval,
                     "block_number": start_block,
                     "last_block_time": last_block_time,
-                    
+
                     "br": br,
-                    "block_count": block_count, 
+                    "block_count": block_count,
                     "dys_ts": dys_ts,
                     "time_diff": str(time_diff),
                     "dmin": dmin,
-                    
+
                     "pow2_count": pow2_count,
                     "pow2_block": pow2_block,
                     "pow2_time": str(pow2_time),
-                    
-                    "trans_count": trans_count, 
+
+                    "trans_count": trans_count,
                     "trans2ex": trans2ex,
                     "to_ex_steem": to_ex_steem,
                     "to_ex_steem_dmin": to_ex_steem/dmin,
                     "to_ex_sbd": to_ex_sbd,
                     "to_ex_sbd_dmin": to_ex_sbd/dmin,
-                    
+
                     "trans4ex": trans4ex,
                     "from_ex_steem": from_ex_steem,
                     "from_ex_steem_dmin": from_ex_steem/dmin,
@@ -230,7 +230,7 @@ for br in range(start_block, end_block + 1):
 
                 redis_key = "%s%s:%s" % (prefix, start_block, end_block)
                 rdb.set(redis_key , json.dumps(block_stats))
-                
+
     block_count += 1
     time.sleep(pause)
 
