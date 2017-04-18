@@ -3,14 +3,16 @@
 Get data from Pandas dataframe and aggregate together slot's records
 Plot STEEM flow graphics daily/weekly/monthly
 '''
+import os
+import datetime
+import pprint
+
 import yaml
 import pandas as pd
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from numpy import arange
-import datetime
 
-import pprint
 pp = pprint.PrettyPrinter(indent=4)
 
 # set font
@@ -118,6 +120,8 @@ rate = {"rate_steem": total["to_ex_steem_dmin"] / total["from_ex_steem_dmin"],
 pp.pprint(rate)
 
 xtics = arange(col)
+
+os.mkdir(img_path)
 
 #### 1 STEEM - exchange
 plt.figure(1)
