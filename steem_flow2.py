@@ -7,9 +7,9 @@ Author: https://steemit.com/@fooblic
 '''
 import time
 import sys
+import json
 import dateutil.parser
 import redis
-import json
 
 '''Python Library for Steem:
 https://github.com/xeroc/piston-lib'''

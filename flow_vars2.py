@@ -2,8 +2,8 @@
 '''
 Initial variables values for steem_flow2.py
 '''
-import yaml
 import pprint
+import yaml
 
 usage = '''Error arg keys.
 Usage: ./steem_flow2.py [options]
@@ -13,9 +13,16 @@ Usage: ./steem_flow2.py [options]
     --redis                  parse blocks from last one in Redis DB 
 '''
 
-exchanges = ('bittrex', 'poloniex', 'blocktrades', 'openledger',
-                 'hitbtc-exchange', 'hitbtc-payout', 'changelly',
-                 'shapeshiftio')
+exchanges = ('poloniex',
+             'bittrex',
+             'blocktrades',
+             'openledger',
+             'hitbtc-exchange',
+             'hitbtc-payout',
+             'changelly',
+             'freewallet.org',
+             'livecoin.net',
+             'coinpayments.net')
 
 oper_list = ('vote',
             'comment',
