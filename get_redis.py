@@ -24,5 +24,5 @@ def get_slot_dates(db, key):
 
 def del_slot(db, key, list_name):
     '''Remove slot record and index'''
-    db.delete(key)  # ‘del’ is a reserved keyword
+    db.delete(key)  # 'del' is a reserved keyword
     db.zrem(list_name, key)
