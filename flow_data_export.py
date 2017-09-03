@@ -2,6 +2,7 @@
 '''
 Get data from Redis and save it to Pandas dataframe
 '''
+import os
 import sys
 import redis
 import json
@@ -20,7 +21,7 @@ except:
     sys.exit(0)
 
 # config
-my_config = yaml.load(open("./steem_flow/steemapi.yml"))
+my_config = yaml.load(open(os.environ["STEEM_CFG"]))
 log         = my_config['log']
 prefix      = my_config["prefix"]
 last_info   = my_config["last_info"]

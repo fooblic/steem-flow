@@ -5,6 +5,7 @@ Plot STEEM flow graphics daily/weekly/monthly
 '''
 import os
 import datetime
+import time
 import pprint
 
 import yaml
@@ -21,7 +22,10 @@ mpl.rcParams["font.size"] = 16
 
 my_config = yaml.load(open("steemapi.yml"))
 df = pd.read_pickle(my_config["pickle_file"])
-img_path = my_config["img_path"] # to save plots
+
+TODAY = time.strftime("%y%m%d")
+#img_path = my_config["img_path"] # to save plots
+img_path = "img" + TODAY + "/"
 
 steem_per_mvests = my_config["steem_per_mvests"] # from https://steemd.com/
 print("steem_per_mvests: ", steem_per_mvests)
@@ -121,7 +125,11 @@ pp.pprint(rate)
 
 xtics = arange(col)
 
-os.mkdir(img_path)
+try:
+    os.mkdir(img_path)
+except:
+    print("Could not create %s" % (img_path))
+#os.mkdir(img_path)
 
 #### 1 STEEM - exchange
 plt.figure(1)
