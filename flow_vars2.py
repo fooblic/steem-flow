@@ -2,6 +2,7 @@
 '''
 Initial variables values for steem_flow2.py
 '''
+import os
 import pprint
 import yaml
 
@@ -35,7 +36,7 @@ oper_list = ('vote',
             'account_witness_vote')
 
 # My config
-my_config = yaml.load(open("steemapi.yml"))
+my_config = yaml.load(open(os.environ["STEEM_CFG"]))
 log =   my_config['log']
 pause = my_config['pause'] # seconds
 

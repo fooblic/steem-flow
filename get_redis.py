@@ -21,3 +21,8 @@ def get_slot_dates(db, key):
     stop_date  = record["dys_ts"]
 
     return str(start_date + " - " +  stop_date)
+
+def del_slot(db, key, list_name):
+    '''Remove slot record and index'''
+    db.delete(key)  # ‘del’ is a reserved keyword
+    db.zrem(list_name, key)
