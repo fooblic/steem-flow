@@ -97,6 +97,7 @@ def aggregate_data(col_name, set_in, df_out):
 
 weekly_df = aggregate_data("week", weeks, weekly).T
 monthly_df = aggregate_data("month", monthes, monthly).T
+monthly_df.sort_index(inplace=True)
 
 print(weekly_df)
 print(monthly_df)
