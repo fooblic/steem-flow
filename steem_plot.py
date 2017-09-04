@@ -256,7 +256,7 @@ def plot_pic(pic):
     if "Monthly" in pic["title"]:
         x_ticks = []
         for mon in pic["df1"].index.values:
-            x_ticks.append(monthes_list[mon])
+            x_ticks.append(monthes_list[mon - 1])
         plt.xticks(pic["xtics"], x_ticks)
     else:
         plt.xticks(pic["xtics"], pic["df1"].index.values)
