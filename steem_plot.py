@@ -236,20 +236,31 @@ plt.savefig(img_path + "daily_sp.png")
 
 
 ################## Weekly/Monthly graphs
+monthes_list = ["Jan.", "Feb.", "Mar.", "Apr.", "May", "Jun.", 
+                "Jul.", "Aug.", "Sep.", "Oct.", "Nov.", "Dec."]
 
 def plot_pic(pic):
     #### 1 STEEM - exchange
+
     plt.figure(pic["num"])
-    plt.bar(pic["xtics"]-0.2, pic["df1"],
+    plt.bar(pic["xtics"] - 0.2, pic["df1"],
                 width=0.4,
                 color="blue",
                 label=pic["x_legend"])
-    plt.bar(pic["xtics"]+0.2, pic["df2"],
+    plt.bar(pic["xtics"] + 0.2, pic["df2"],
                 width=0.4,
                 color="lightblue",
                 label=pic["y_legend"])
     plt.legend(loc = "best")
-    plt.xticks(pic["xtics"], pic["df1"].index.values)
+
+    if "Monthly" in pic["title"]:
+        x_ticks = []
+        for mon in pic["df1"].index.values:
+            x_ticks.append(monthes_list[mon])
+        plt.xticks(pic["xtics"], x_ticks)
+    else:
+        plt.xticks(pic["xtics"], pic["df1"].index.values)
+
     plt.title(pic["title"])
     plt.xlabel(pic["x_label"])
     plt.ylabel(pic["y_label"])
@@ -260,7 +271,7 @@ def plot_pic(pic):
 # STEEM flow rate
 weekr  = arange( len( list( weekly_df.index.values )))
 monthr = arange( len( list( monthly_df.index.values )))
-    
+
 pnum = 6
 pic = {}
 pic["title"]    = "Weekly STEEM flow rate"
@@ -286,7 +297,7 @@ pic["df1"]      = monthly_df["to_ex_steem_dmin"]
 pic["df2"]      = monthly_df["from_ex_steem_dmin"]
 pic["x_legend"] = "to exchanges"
 pic["y_legend"] = "from exchanges"
-pic["x_label"]  = "Month number"
+pic["x_label"]  = "Month"
 pic["y_label"]  = "STEEM per minute"
 pic["bottom"]   = 0.1
 pic["fname"]    = "monthly_steem_ex.png"
@@ -319,7 +330,7 @@ pic["df1"]      = monthly_df["to_ex_sbd_dmin"]
 pic["df2"]      = monthly_df["from_ex_sbd_dmin"]
 pic["x_legend"] = "to exchanges"
 pic["y_legend"] = "from exchanges"
-pic["x_label"]  = "Month number"
+pic["x_label"]  = "Month"
 pic["y_label"]  = "SBD per minute"
 pic["bottom"]   = 0.1
 pic["fname"]    = "monthly_sbd_ex.png"
@@ -352,7 +363,7 @@ pic["df1"]      = (monthly_df["to_ex_steem_dmin"]/monthly_df["from_ex_steem_dmin
 pic["df2"]      = (monthly_df["to_ex_sbd_dmin"]/monthly_df["from_ex_sbd_dmin"]).map(ratio)
 pic["x_legend"] = "STEEM to/from exchanges ratio"
 pic["y_legend"] = "SBD to/from exchanges ratio"
-pic["x_label"]  = "Month number"
+pic["x_label"]  = "Month"
 pic["y_label"]  = "Ratio"
 pic["bottom"]   = 0.1
 pic["fname"]    = "monthly_flow_ratio.png"
@@ -385,7 +396,7 @@ pic["df1"]      = monthly_df["convert_sbd_dmin"]
 pic["df2"]      = monthly_df["to_null_sbd_dmin"]
 pic["x_legend"] = "convert"
 pic["y_legend"] = "to null"
-pic["x_label"]  = "Month number"
+pic["x_label"]  = "Month"
 pic["y_label"]  = "SBD per minute"
 pic["bottom"]   = 0.1
 pic["fname"]    = "monthly_convert_sbd.png"
@@ -418,7 +429,7 @@ pic["df1"]      = monthly_df["vesting_dmin"]
 pic["df2"]      = monthly_df["withdraw_spm_dmin"]
 pic["x_legend"] = "power up"
 pic["y_legend"] = "power down"
-pic["x_label"]  = "Month number"
+pic["x_label"]  = "Month"
 pic["y_label"]  = "STEEM per minute"
 pic["bottom"]   = 0.1
 pic["fname"]    = "monthly_sp.png"
